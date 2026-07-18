@@ -1,3 +1,18 @@
 [gd_scene format=3 uid="uid://cwta612wbdxx7"]
 
-[node name="Node3D" type="Node3D" unique_id=1031806650]
+[ext_resource type="Script" uid="uid://cvmsx3tofu6b0" path="res://player.gd" id="1_4flbx"]
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_sh265"]
+size = Vector3(1, 2, 1)
+
+[node name="Player" type="Node3D" unique_id=1031806650]
+
+[node name="CharacterBody3D" type="CharacterBody3D" parent="." unique_id=348957572]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0)
+script = ExtResource("1_4flbx")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="CharacterBody3D" unique_id=200854920]
+shape = SubResource("BoxShape3D_sh265")
+
+[node name="Camera3D" type="Camera3D" parent="CharacterBody3D" unique_id=1691676230]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.5, 0)

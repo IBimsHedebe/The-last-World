@@ -1,3 +1,14 @@
 [gd_scene format=3 uid="uid://dfskcqw5m421h"]
 
+[ext_resource type="PackedScene" uid="uid://cwta612wbdxx7" path="res://player.tscn" id="1_f3sb7"]
+
+[sub_resource type="WorldBoundaryShape3D" id="WorldBoundaryShape3D_gv5m4"]
+
 [node name="Node3D" type="Node3D" unique_id=1965178656]
+
+[node name="StaticBody3D" type="StaticBody3D" parent="." unique_id=918823041]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="StaticBody3D" unique_id=116097014]
+shape = SubResource("WorldBoundaryShape3D_gv5m4")
+
+[node name="Node3D" parent="." unique_id=1031806650 instance=ExtResource("1_f3sb7")]
