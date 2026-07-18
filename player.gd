@@ -1,11 +1,26 @@
 extends CharacterBody3D
 
-var speed = 20
-var jumpForce = 40
-var gravity = 3
+@export var speed: int = 20
+@export var jumpForce: int = 120
+@export var gravity: float = ProjectSettings.get_setting("physics/3d/default_gravity")
+@export var mouseSensitivity: float = 0.003
+
+@onready var camera_boom: Node3D = $"Camera Boom"
 
 func _ready() -> void:
-	pass
+	Input.mouse_mode = Input.MOUSE_MODE_CAPTURED
+
+func _unhandled_input(event: InputEvent) -> void:
+	if event.is_action_pressed("ui_cancel"):
+		if Input.mouse_mode == Input.MOUSE_MODE_CAPTURED:
+			Input.mouse_mode = Input.MOUSE_MODE_VISIBLE
+		else:
+			Input.mouse_mode = Input.MOUSE_MODE_CAPTURED
+	
+	if event is InputEventMouseMotion and Input.mouse_mode == Input.MOUSE_MODE_CAPTURED:
+		rotate_y(-event.relative.x * mouseSensitivity)
+		camera_boom.rotate_x(-event.relative.y * mouseSensitivity)
+		camera_boom.rotation.x = clamp(camera_boom.rotation.x, deg_to_rad(-60), deg_to_rad(60))
 
 func _physics_process(_delta):
 	

@@ -1,4 +1,6 @@
 extends MeshInstance3D
+const PLAYER = preload("uid://cwta612wbdxx7")
+
 
 @export var mapWidth: int = 100
 @export var mapDepth: int = 100
@@ -13,6 +15,7 @@ func _ready() -> void:
 	noise.frequency = 0.02
 	
 	_generate_world()
+	_spawn_player()
 
 func _generate_world() -> void:
 	var st = SurfaceTool.new()
@@ -58,3 +61,19 @@ func _apply_vertex_material():
 	mat.vertex_color_use_as_albedo = true
 	mat.roughness = 0.8
 	material_override = mat
+
+func _spawn_player():
+	if not PLAYER:
+		print("Kein Player")
+		return
+	
+	var player = PLAYER.instantiate()
+	
+	var spawn_x = mapWidth / 2.0
+	var spawn_z = mapDepth / 2.0
+	
+	var spawn_y = noise.get_noise_2d(spawn_x, spawn_z) * heightScale
+	
+	player.global_position = Vector3(spawn_x, spawn_y + 5.0, spawn_z)
+	
+	get_parent().add_child.call_deferred(player)

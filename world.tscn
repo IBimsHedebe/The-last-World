@@ -1,7 +1,6 @@
 [gd_scene format=3 uid="uid://dfskcqw5m421h"]
 
 [ext_resource type="Script" uid="uid://mpvad07ubtpt" path="res://mesh_instance_3d.gd" id="1_f3sb7"]
-[ext_resource type="PackedScene" uid="uid://cwta612wbdxx7" path="res://player.tscn" id="2_fj7yv"]
 
 [node name="world" type="Node3D" unique_id=1965178656]
 
@@ -10,5 +9,3 @@ script = ExtResource("1_f3sb7")
 
 [node name="DirectionalLight3D" type="DirectionalLight3D" parent="." unique_id=542971435]
 transform = Transform3D(0.89381796, 0.40263018, 0.19742952, -0.4484301, 0.8025291, 0.39351976, 0, -0.44026834, 0.89786637, 0, 0, 0)
-
-[node name="Player" parent="." unique_id=1031806650 instance=ExtResource("2_fj7yv")]
