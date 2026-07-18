@@ -15,4 +15,4 @@ script = ExtResource("1_4flbx")
 shape = SubResource("BoxShape3D_sh265")
 
 [node name="Camera3D" type="Camera3D" parent="CharacterBody3D" unique_id=1691676230]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.5, 0)
+transform = Transform3D(1, 0, 0, 0, 0.8660254, 0.5, 0, -0.5, 0.8660254, 0, 4, 3)
