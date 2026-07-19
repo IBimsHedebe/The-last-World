@@ -26,10 +26,6 @@ func _ready() -> void:
 	WorkerThreadPool.add_task(_thread_generate_world)
 
 func _thread_generate_world() -> void:
-	# Moistiore / height	high			normal		deep
-	# Dry 					Stone Desert	Desert		Tomb of sorts
-	# Normal 				Hill			plains		crater
-	# Wet					Mountain		swamp		sea
 	var st = SurfaceTool.new()
 	st.begin(Mesh.PRIMITIVE_TRIANGLES)
 	
@@ -64,7 +60,7 @@ func _thread_generate_world() -> void:
 			
 			currentVertex += 1
 			if currentVertex % 500 == 0:
-				generationProgress.emit(float(currentVertex) / totalVertices * 100.0)
+				generationProgress.emit.call_deferred(float(currentVertex) / totalVertices * 100.0)
 	
 	for z in range(mapDepth - 1):
 		for x in range(mapWidth - 1):
