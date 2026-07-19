@@ -9,6 +9,9 @@ const PLAYER = preload("uid://cwta612wbdxx7")
 var heightNoise: FastNoiseLite
 var moisterNoise: FastNoiseLite
 
+signal generationProgress(percent: float)
+signal generationFinished
+
 func _ready() -> void:
 	heightNoise = FastNoiseLite.new()
 	heightNoise.seed = randi()
@@ -20,17 +23,18 @@ func _ready() -> void:
 	moisterNoise.noise_type = FastNoiseLite.TYPE_SIMPLEX
 	moisterNoise.frequency = 0.1
 	
-	_generate_world()
-	_apply_vertex_material()
-	_spawn_player()
+	WorkerThreadPool.add_task(_thread_generate_world)
 
-func _generate_world() -> void:
+func _thread_generate_world() -> void:
 	# Moistiore / height	high			normal		deep
 	# Dry 					Stone Desert	Desert		Tomb of sorts
 	# Normal 				Hill			plains		crater
 	# Wet					Mountain		swamp		sea
 	var st = SurfaceTool.new()
 	st.begin(Mesh.PRIMITIVE_TRIANGLES)
+	
+	var totalVertices = mapDepth * mapWidth
+	var currentVertex = 0
 	
 	for z in range(mapDepth):
 		for x in range(mapWidth):
@@ -57,6 +61,10 @@ func _generate_world() -> void:
 			st.set_uv(uv)
 			st.set_color(vertexColor)
 			st.add_vertex(Vector3(x,y,z))
+			
+			currentVertex += 1
+			if currentVertex % 500 == 0:
+				generationProgress.emit(float(currentVertex) / totalVertices * 100.0)
 	
 	for z in range(mapDepth - 1):
 		for x in range(mapWidth - 1):
@@ -74,9 +82,16 @@ func _generate_world() -> void:
 			st.add_index(v2)
 	
 	st.generate_normals()
-	mesh = st.commit()
 	
+	call_deferred("_finalize_mesh", st)
+
+func _finalize_mesh(st: SurfaceTool):
+	mesh = st.commit()
 	create_trimesh_collision()
+	_apply_vertex_material()
+	_spawn_player()
+	
+	generationFinished.emit()
 
 func _apply_vertex_material():
 	var mat = StandardMaterial3D.new()
