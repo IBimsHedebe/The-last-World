@@ -1,6 +1,7 @@
 [gd_scene format=3 uid="uid://c64ldodmiyhuq"]
 
 [ext_resource type="Script" uid="uid://cwumyheq1m0ku" path="res://bulwark_shell.gd" id="1_58yo8"]
+[ext_resource type="PackedScene" uid="uid://ci0jh7s7e4xjh" path="res://addons/Universal Animation Library 2[Standard]/Unreal-Godot/UAL2_Standard.glb" id="2_ssrpp"]
 
 [sub_resource type="CapsuleShape3D" id="CapsuleShape3D_ssrpp"]
 
@@ -25,6 +26,9 @@ shape = SubResource("CapsuleShape3D_kkvrr")
 
 [node name="RecoveryTimer" type="Timer" parent="CharacterBody3D" unique_id=1005559693]
 one_shot = true
+
+[node name="UAL2_Standard" parent="CharacterBody3D" unique_id=279408016 instance=ExtResource("2_ssrpp")]
+transform = Transform3D(-1, 0, -8.742278e-08, 0, 1, 0, 8.742278e-08, 0, -1, 0, -1, 0)
 
 [connection signal="area_entered" from="CharacterBody3D/WeakSpot" to="CharacterBody3D" method="_on_weak_spot_area_entered"]
 [connection signal="timeout" from="CharacterBody3D/RecoveryTimer" to="CharacterBody3D" method="_on_recovery_timer_timeout"]

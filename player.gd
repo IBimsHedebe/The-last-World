@@ -10,6 +10,9 @@ extends CharacterBody3D
 @onready var waeponHitbox: Area3D = $WaeponHitbox
 @onready var hitboxShape: CollisionShape3D = $WaeponHitbox/CollisionShape3D
 
+@onready var animationTree: AnimationTree = $AnimationTree
+@onready var stateMachine = animationTree.get("parameters/playback")
+
 func _ready() -> void:
 	Input.mouse_mode = Input.MOUSE_MODE_CAPTURED
 	
@@ -21,11 +24,14 @@ func _input(event: InputEvent) -> void:
 
 func _attack():
 	print("Player attacks!")
+	animationTree.set("parameters/conditions/is_attacking", true)
+	stateMachine.travel("Attack1")
 	hitboxShape.set_deferred("disabled", false)
 	
-	await get_tree().create_timer(0.3).timeout
+	await get_tree().create_timer(0.4).timeout
 	
 	hitboxShape.set_deferred("disabled", true)
+	animationTree.set("parameters/conditions/is_attacking", false)
 
 func _unhandled_input(event: InputEvent) -> void:
 	if event.is_action_pressed("ui_cancel"):
@@ -58,3 +64,8 @@ func _physics_process(_delta):
 	velocity.y -= gravity
 	
 	move_and_slide()
+	
+	if velocity.length() > 0.1:
+		stateMachine.travel("Walk")
+	else:
+		stateMachine.travel("Idle")
