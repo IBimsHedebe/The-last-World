@@ -4,6 +4,9 @@
 
 [sub_resource type="CapsuleShape3D" id="CapsuleShape3D_4flbx"]
 
+[sub_resource type="BoxShape3D" id="BoxShape3D_4flbx"]
+size = Vector3(0.2, 0.2, 1)
+
 [node name="Player" type="Node3D" unique_id=1031806650]
 
 [node name="CharacterBody3D" type="CharacterBody3D" parent="." unique_id=348957572]
@@ -18,3 +21,9 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.6, 0)
 
 [node name="Camera3D" type="Camera3D" parent="CharacterBody3D/Camera Boom" unique_id=1691676230]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2, 5)
+
+[node name="WaeponHitbox" type="Area3D" parent="CharacterBody3D" unique_id=259474905 groups=["PlayerAttack"]]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="CharacterBody3D/WaeponHitbox" unique_id=1283717511]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.5, 0, -0.5)
+shape = SubResource("BoxShape3D_4flbx")

@@ -5,10 +5,27 @@ extends CharacterBody3D
 @export var gravity: float = ProjectSettings.get_setting("physics/3d/default_gravity")
 @export var mouseSensitivity: float = 0.003
 
-@onready var camera_boom: Node3D = $"Camera Boom"
+@onready var cameraBoom: Node3D = $"Camera Boom"
+
+@onready var waeponHitbox: Area3D = $WaeponHitbox
+@onready var hitboxShape: CollisionShape3D = $WaeponHitbox/CollisionShape3D
 
 func _ready() -> void:
 	Input.mouse_mode = Input.MOUSE_MODE_CAPTURED
+	
+	hitboxShape.set_deferred("disabled", true)
+
+func _input(event: InputEvent) -> void:
+	if event.is_action_pressed("Linke Maus Taste"):
+		_attack()
+
+func _attack():
+	print("Player attacks!")
+	hitboxShape.set_deferred("disabled", false)
+	
+	await get_tree().create_timer(0.3).timeout
+	
+	hitboxShape.set_deferred("disabled", true)
 
 func _unhandled_input(event: InputEvent) -> void:
 	if event.is_action_pressed("ui_cancel"):
@@ -19,8 +36,8 @@ func _unhandled_input(event: InputEvent) -> void:
 	
 	if event is InputEventMouseMotion and Input.mouse_mode == Input.MOUSE_MODE_CAPTURED:
 		rotate_y(-event.relative.x * mouseSensitivity)
-		camera_boom.rotate_x(-event.relative.y * mouseSensitivity)
-		camera_boom.rotation.x = clamp(camera_boom.rotation.x, deg_to_rad(-60), deg_to_rad(60))
+		cameraBoom.rotate_x(-event.relative.y * mouseSensitivity)
+		cameraBoom.rotation.x = clamp(cameraBoom.rotation.x, deg_to_rad(-60), deg_to_rad(60))
 
 func _physics_process(_delta):
 	
