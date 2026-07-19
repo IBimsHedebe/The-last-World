@@ -1,5 +1,6 @@
 extends MeshInstance3D
 const PLAYER = preload("uid://cwta612wbdxx7")
+const MONSTER = preload("res://bulwark-shell.tscn")
 
 @export var terrainCurve: Curve
 
@@ -94,6 +95,7 @@ func _finalize_mesh(st: SurfaceTool):
 	create_trimesh_collision()
 	_apply_vertex_material()
 	_spawn_player()
+	_spawn_monster()
 	
 	generationFinished.emit()
 
@@ -116,3 +118,17 @@ func _spawn_player():
 	
 	player.global_position = Vector3(spawn_x, spawn_y + 5.0, spawn_z)
 	get_parent().add_child.call_deferred(player)
+
+func _spawn_monster():
+	if not MONSTER:
+		print("Kein Monster")
+		return
+	
+	var monster = MONSTER.instantiate()
+	
+	var spawn_x = mapWidth / 2.0
+	var spawn_z = mapDepth / 2.0 + 20
+	var spawn_y = heightNoise.get_noise_2d(spawn_x, spawn_z) * heightScale
+	
+	monster.global_position = Vector3(spawn_x, spawn_y + 5.0, spawn_z)
+	get_parent().add_child.call_deferred(monster)

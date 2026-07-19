@@ -1,12 +1,29 @@
 [gd_scene format=3 uid="uid://c64ldodmiyhuq"]
 
-[sub_resource type="BoxShape3D" id="BoxShape3D_u8eio"]
-size = Vector3(1, 2, 1)
+[ext_resource type="Script" uid="uid://cwumyheq1m0ku" path="res://bulwark_shell.gd" id="1_58yo8"]
+
+[sub_resource type="CapsuleShape3D" id="CapsuleShape3D_ssrpp"]
+
+[sub_resource type="CapsuleShape3D" id="CapsuleShape3D_kkvrr"]
 
 [node name="bulwark-shell" type="Node3D" unique_id=804877977]
 
 [node name="CharacterBody3D" type="CharacterBody3D" parent="." unique_id=481360706]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0)
+script = ExtResource("1_58yo8")
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="CharacterBody3D" unique_id=2041012268]
-shape = SubResource("BoxShape3D_u8eio")
+shape = SubResource("CapsuleShape3D_ssrpp")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="CharacterBody3D" unique_id=523290006]
+
+[node name="WeakSpot" type="Area3D" parent="CharacterBody3D" unique_id=252807556]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.2, 0, 0)
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="CharacterBody3D/WeakSpot" unique_id=893051807]
+shape = SubResource("CapsuleShape3D_kkvrr")
+
+[node name="RecoveryTimer" type="Timer" parent="CharacterBody3D" unique_id=1005559693]
+one_shot = true
+
+[connection signal="area_entered" from="CharacterBody3D/WeakSpot" to="CharacterBody3D" method="_on_weak_spot_area_entered"]
