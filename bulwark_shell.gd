@@ -9,13 +9,19 @@ var currentState: State = State.IDLE
 
 @onready var player: Node3D = %Player
 @onready var recovery_timer: Timer = $RecoveryTimer
-@onready var mesh_instance_3d: MeshInstance3D = $MeshInstance3D
+@onready var mesh: MeshInstance3D = $MeshInstance3D
 
 var chargeDirection: Vector3 = Vector3.ZERO
 var gravity: float = ProjectSettings.get_setting("physics/3d/default_gravity")
 
 func _ready() -> void:
 	currentState = State.CHASE
+	
+	var players = get_tree().get_nodes_in_group("Player")
+	if players.size() > 0:
+		player = players[0]
+	else:
+		print("Warning: No players in group 'Player'!")
 
 func _physics_process(delta: float) -> void:
 	if not is_on_floor():
@@ -53,7 +59,7 @@ func _start_charge(direction: Vector3):
 	currentState = State.CHARGING
 	chargeDirection = direction
 	
-	var material = mesh_instance_3d.get_active_material(0)
+	var material = mesh.get_active_material(0)
 	if material == StandardMaterial3D:
 		material.albedo_color = Color.RED
 	
@@ -71,15 +77,15 @@ func _execute_charging(_delta: float):
 func _enter_recovery():
 	currentState = State.RECOVERY
 	
-	var material = mesh_instance_3d.get_active_material(0)
+	var material = mesh.get_active_material(0)
 	if material == StandardMaterial3D:
 		material.albedo_color = Color.WHITE
 	
-	mesh_instance_3d.rotation_degrees.z = 45
+	mesh.rotation_degrees.z = 45
 	recovery_timer.start(3.0)
 
 func _on_recovery_timer_timeout():
-	mesh_instance_3d.rotation_degrees.z = 0
+	mesh.rotation_degrees.z = 0
 	currentState = State.CHASE
 
 

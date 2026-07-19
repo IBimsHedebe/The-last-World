@@ -7,23 +7,21 @@
 [sub_resource type="BoxShape3D" id="BoxShape3D_4flbx"]
 size = Vector3(0.2, 0.2, 1)
 
-[node name="Player" type="Node3D" unique_id=1031806650]
-
-[node name="CharacterBody3D" type="CharacterBody3D" parent="." unique_id=348957572]
+[node name="CharacterBody3D" type="CharacterBody3D" unique_id=1415915521 groups=["Player"]]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0)
 script = ExtResource("1_4flbx")
 
-[node name="CollisionShape3D" type="CollisionShape3D" parent="CharacterBody3D" unique_id=200854920]
+[node name="CollisionShape3D" type="CollisionShape3D" parent="." unique_id=410488152]
 shape = SubResource("CapsuleShape3D_4flbx")
 
-[node name="Camera Boom" type="Node3D" parent="CharacterBody3D" unique_id=1439044071]
+[node name="Camera Boom" type="Node3D" parent="." unique_id=1935188929]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.6, 0)
 
-[node name="Camera3D" type="Camera3D" parent="CharacterBody3D/Camera Boom" unique_id=1691676230]
+[node name="Camera3D" type="Camera3D" parent="Camera Boom" unique_id=422224541]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2, 5)
 
-[node name="WaeponHitbox" type="Area3D" parent="CharacterBody3D" unique_id=259474905 groups=["PlayerAttack"]]
+[node name="WaeponHitbox" type="Area3D" parent="." unique_id=900131844 groups=["PlayerAttack"]]
 
-[node name="CollisionShape3D" type="CollisionShape3D" parent="CharacterBody3D/WaeponHitbox" unique_id=1283717511]
+[node name="CollisionShape3D" type="CollisionShape3D" parent="WaeponHitbox" unique_id=1532758977]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.5, 0, -0.5)
 shape = SubResource("BoxShape3D_4flbx")

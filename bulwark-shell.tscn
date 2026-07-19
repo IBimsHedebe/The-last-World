@@ -27,3 +27,4 @@ shape = SubResource("CapsuleShape3D_kkvrr")
 one_shot = true
 
 [connection signal="area_entered" from="CharacterBody3D/WeakSpot" to="CharacterBody3D" method="_on_weak_spot_area_entered"]
+[connection signal="timeout" from="CharacterBody3D/RecoveryTimer" to="CharacterBody3D" method="_on_recovery_timer_timeout"]
