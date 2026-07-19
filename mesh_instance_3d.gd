@@ -1,10 +1,11 @@
 extends MeshInstance3D
 const PLAYER = preload("uid://cwta612wbdxx7")
 
+@export var terrainCurve: Curve
 
 @export var mapWidth: int = 1000
 @export var mapDepth: int = 1000
-@export var heightScale: float = 10.0
+@export var heightScale: float = 150.0
 
 var heightNoise: FastNoiseLite
 var moisterNoise: FastNoiseLite
@@ -15,8 +16,9 @@ signal generationFinished
 func _ready() -> void:
 	heightNoise = FastNoiseLite.new()
 	heightNoise.seed = randi()
-	heightNoise.noise_type = FastNoiseLite.TYPE_SIMPLEX
-	heightNoise.frequency = 0.02
+	heightNoise.noise_type = FastNoiseLite.TYPE_VALUE_CUBIC
+	heightNoise.frequency = 0.01
+	heightNoise.fractal_octaves = 4
 	
 	moisterNoise = FastNoiseLite.new()
 	moisterNoise.seed = randi()
@@ -37,8 +39,14 @@ func _thread_generate_world() -> void:
 			var hVal = heightNoise.get_noise_2d(x,z)
 			var mVal = moisterNoise.get_noise_2d(x,z)
 			
-			var y = hVal * heightScale
+			var normalizedH = (hVal + 1.0) / 2
+			var layeredH = normalizedH
+			if terrainCurve:
+				layeredH = terrainCurve.sample(normalizedH)
 			
+			hVal = (layeredH * 2.0) - 1.0
+			
+			var y = hVal * heightScale
 			var uv = Vector2(float(x) / mapWidth, float(z) / mapDepth)
 			
 			var vertexColor = Color.DARK_GREEN
