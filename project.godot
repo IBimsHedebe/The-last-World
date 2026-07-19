@@ -11,7 +11,7 @@ config_version=5
 [application]
 
 config/name="The last World"
-run/main_scene="uid://dfskcqw5m421h"
+run/main_scene="uid://b5hyotjgwbfbp"
 config/features=PackedStringArray("4.6", "Forward Plus")
 config/icon="res://icon.svg"
 
