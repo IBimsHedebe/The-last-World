@@ -2,36 +2,58 @@ extends MeshInstance3D
 const PLAYER = preload("uid://cwta612wbdxx7")
 
 
-@export var mapWidth: int = 100
-@export var mapDepth: int = 100
-@export var heightScale: float = 20.0
+@export var mapWidth: int = 1000
+@export var mapDepth: int = 1000
+@export var heightScale: float = 10.0
 
-var noise: FastNoiseLite
+var heightNoise: FastNoiseLite
+var moisterNoise: FastNoiseLite
 
 func _ready() -> void:
-	noise = FastNoiseLite.new()
-	noise.seed = randi()
-	noise.noise_type = FastNoiseLite.TYPE_SIMPLEX
-	noise.frequency = 0.02
+	heightNoise = FastNoiseLite.new()
+	heightNoise.seed = randi()
+	heightNoise.noise_type = FastNoiseLite.TYPE_SIMPLEX
+	heightNoise.frequency = 0.02
+	
+	moisterNoise = FastNoiseLite.new()
+	moisterNoise.seed = randi()
+	moisterNoise.noise_type = FastNoiseLite.TYPE_SIMPLEX
+	moisterNoise.frequency = 0.1
 	
 	_generate_world()
+	_apply_vertex_material()
 	_spawn_player()
 
 func _generate_world() -> void:
+	# Moistiore / height	high			normal		deep
+	# Dry 					Stone Desert	Desert		Tomb of sorts
+	# Normal 				Hill			plains		crater
+	# Wet					Mountain		swamp		sea
 	var st = SurfaceTool.new()
 	st.begin(Mesh.PRIMITIVE_TRIANGLES)
 	
 	for z in range(mapDepth):
 		for x in range(mapWidth):
-			var y = noise.get_noise_2d(x,z) * heightScale
+			var hVal = heightNoise.get_noise_2d(x,z)
+			var mVal = moisterNoise.get_noise_2d(x,z)
+			
+			var y = hVal * heightScale
+			
 			var uv = Vector2(float(x) / mapWidth, float(z) / mapDepth)
 			
 			var vertexColor = Color.DARK_GREEN
-			if y > heightScale * 0.4:
-				vertexColor = Color.MEDIUM_SLATE_BLUE.darkened(0.5)
-			if y > heightScale * 0.7:
+			if hVal > 0.8:
 				vertexColor = Color.WHITE
-			
+			elif hVal > 0.6:
+				vertexColor = Color.DARK_SLATE_GRAY
+			else:
+				if mVal > -0.2:
+					vertexColor = Color.PALE_GOLDENROD
+				elif  mVal > 0.2:
+					vertexColor = Color.MEDIUM_SEA_GREEN
+				else:
+					vertexColor = Color.YELLOW_GREEN
+		
 			st.set_uv(uv)
 			st.set_color(vertexColor)
 			st.add_vertex(Vector3(x,y,z))
@@ -71,9 +93,7 @@ func _spawn_player():
 	
 	var spawn_x = mapWidth / 2.0
 	var spawn_z = mapDepth / 2.0
-	
-	var spawn_y = noise.get_noise_2d(spawn_x, spawn_z) * heightScale
+	var spawn_y = heightNoise.get_noise_2d(spawn_x, spawn_z) * heightScale
 	
 	player.global_position = Vector3(spawn_x, spawn_y + 5.0, spawn_z)
-	
 	get_parent().add_child.call_deferred(player)
