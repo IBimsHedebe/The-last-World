@@ -4,12 +4,12 @@ const MONSTER = preload("res://bulwark-shell.tscn")
 
 @export var terrainCurve: Curve
 
-@export var mapWidth: int = 1000
-@export var mapDepth: int = 1000
-@export var heightScale: float = 150.0
+@export var mapWidth: int = 500
+@export var mapDepth: int = 500
+@export var heightScale: float = 200.0
 
 var heightNoise: FastNoiseLite
-var moisterNoise: FastNoiseLite
+var riverNoise: Array
 
 signal generationProgress(percent: float)
 signal generationFinished
@@ -19,14 +19,44 @@ func _ready() -> void:
 	heightNoise.seed = randi()
 	heightNoise.noise_type = FastNoiseLite.TYPE_VALUE_CUBIC
 	heightNoise.frequency = 0.01
-	heightNoise.fractal_octaves = 4
-	
-	moisterNoise = FastNoiseLite.new()
-	moisterNoise.seed = randi()
-	moisterNoise.noise_type = FastNoiseLite.TYPE_SIMPLEX
-	moisterNoise.frequency = 0.1
+	heightNoise.fractal_weighted_strength = 1.2
 	
 	WorkerThreadPool.add_task(_thread_generate_world)
+
+func _finalize_mesh(st: SurfaceTool):
+	mesh = st.commit()
+	create_trimesh_collision()
+	_apply_vertex_material()
+	_spawn_player()
+	_spawn_monster()
+	
+	generationFinished.emit()
+
+func carve_rivers(height_map: Array, width: int, depth: int) -> Array:
+	var river_noise = FastNoiseLite.new()
+	river_noise.noise_type = FastNoiseLite.TYPE_CELLULAR
+	river_noise.frequency = 0.005
+	
+	var river_width_threshold: float = 0.15
+	var river_depth_power: float = 2.0
+	var carve_strength: float = 0.4
+	
+	for x in range(width):
+		for z in range(depth):
+			var raw_river_value: float = river_noise.get_noise_2d(float(x), float(z))
+			
+			raw_river_value = (raw_river_value + 1.0) / 2.0 
+			
+			if raw_river_value < river_width_threshold:
+				var river_gradient: float = 1.0 - (raw_river_value / river_width_threshold)
+				var river_profile: float = pow(river_gradient, river_depth_power)
+				var current_height: float = height_map[x][z]
+				var target_river_floor: float = current_height - carve_strength
+				
+				height_map[x][z] = lerp(current_height, target_river_floor, river_profile)
+				height_map[x][z] = maxf(height_map[x][z], -1.0)
+	
+	return height_map
 
 func _thread_generate_world() -> void:
 	var st = SurfaceTool.new()
@@ -38,16 +68,16 @@ func _thread_generate_world() -> void:
 	for z in range(mapDepth):
 		for x in range(mapWidth):
 			var hVal = heightNoise.get_noise_2d(x,z)
-			var mVal = moisterNoise.get_noise_2d(x,z)
+			var normalizedH = clampf((hVal + 1.0) / 2, 0.0, 1.0)
 			
-			var normalizedH = (hVal + 1.0) / 2
-			var layeredH = normalizedH
-			if terrainCurve:
-				layeredH = terrainCurve.sample(normalizedH)
+			var layeredH = terrainCurve.sample(normalizedH)
+			layeredH = clampf(layeredH, 0.0, 1.0)
 			
 			hVal = (layeredH * 2.0) - 1.0
 			
-			var y = hVal * heightScale
+			var rVal = carve_rivers(riverNoise, 10, 5)[x]
+			
+			var y = hVal * heightScale - rVal
 			var uv = Vector2(float(x) / mapWidth, float(z) / mapDepth)
 			
 			var vertexColor = Color.DARK_GREEN
@@ -55,13 +85,6 @@ func _thread_generate_world() -> void:
 				vertexColor = Color.WHITE
 			elif hVal > 0.6:
 				vertexColor = Color.DARK_SLATE_GRAY
-			else:
-				if mVal > -0.2:
-					vertexColor = Color.PALE_GOLDENROD
-				elif  mVal > 0.2:
-					vertexColor = Color.MEDIUM_SEA_GREEN
-				else:
-					vertexColor = Color.YELLOW_GREEN
 		
 			st.set_uv(uv)
 			st.set_color(vertexColor)
@@ -89,15 +112,6 @@ func _thread_generate_world() -> void:
 	st.generate_normals()
 	
 	call_deferred("_finalize_mesh", st)
-
-func _finalize_mesh(st: SurfaceTool):
-	mesh = st.commit()
-	create_trimesh_collision()
-	_apply_vertex_material()
-	_spawn_player()
-	_spawn_monster()
-	
-	generationFinished.emit()
 
 func _apply_vertex_material():
 	var mat = StandardMaterial3D.new()

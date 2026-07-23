@@ -3,8 +3,9 @@
 [ext_resource type="Script" uid="uid://mpvad07ubtpt" path="res://mesh_instance_3d.gd" id="1_f3sb7"]
 
 [sub_resource type="Curve" id="Curve_f3sb7"]
-_data = [Vector2(0, 0), 0.0, 0.0, 0, 0, Vector2(0.61999995, 0.123595595), 0.97175807, 0.97175807, 0, 0, Vector2(0.905, 0.516854), 2.24719, 2.24719, 0, 0, Vector2(1, 1), 0.0, 0.0, 0, 0]
-point_count = 4
+_data = [Vector2(0, 0), 0.0, 0.0, 0, 0, Vector2(0.5, 0.3), 1.0457908, 1.0, 0, 0, Vector2(1, 1), 0.0, 0.0, 0, 0]
+point_count = 3
+metadata/_snap_enabled = true
 
 [node name="world" type="Node3D" unique_id=1965178656]
 

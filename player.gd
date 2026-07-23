@@ -58,7 +58,7 @@ func _physics_process(_delta):
 		velocity.x = move_toward(velocity.x, 0, speed)
 		velocity.z = move_toward(velocity.z, 0, speed)
 	
-	if Input.is_action_just_pressed("Space") and is_on_floor():
+	if Input.is_action_just_pressed("Space"):
 		velocity.y += jumpForce
 	
 	velocity.y -= gravity
